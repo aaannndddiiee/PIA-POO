@@ -6,6 +6,7 @@ class Casilla:
         self.pos = pos
         self.minasAlrededor = minasAlrededor
         self.visible = False
+        self.bandera = False
 
     def isMina(self):
         return self.mina
@@ -33,3 +34,9 @@ class Casilla:
     
     def setVisible(self, visible):
         self.visible = visible
+
+    def isBandera(self):
+        return self.bandera
+    
+    def setBandera(self, bandera):
+        self.bandera = bandera
