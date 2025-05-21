@@ -47,4 +47,4 @@ class Tablero:
                     print(" X ", end="")
                 else:
                     print(f" {casilla.minasAlrededor} ", end="")
-            print()  # salto de línea
+            print() 
