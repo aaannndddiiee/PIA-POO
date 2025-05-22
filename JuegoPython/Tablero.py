@@ -2,10 +2,14 @@ import Casilla
 from random import randint as ran
 
 class Tablero:
-    def __init__(self, nFilas, nColumnas):
-        self.nFilas = nFilas
-        self.nColumnas = nColumnas
+    def __init__(self):
         self.casillas = []
+
+    def setColumnas(self,columnas):
+        self.nColumnas = columnas
+    
+    def setFilas(self, filas):
+        self.nFilas = filas
 
     def iniciarTablero(self):
         self.casillas = [[Casilla.Casilla(i, j, False, i * self.nColumnas + j + 1, 0) for j in range(self.nColumnas)] for i in range(self.nFilas)]
@@ -37,7 +41,7 @@ class Tablero:
         for i in range(self.nFilas):
             for j in range(self.nColumnas):
                 if(self.casillas[i][j].isMina()):
-                    self.casillasAdyacentes(i,j)
+                    self.casillasAdyacentes(self,i,j)
     
     def imprimir(self):
         print("\nTABLERO:")
