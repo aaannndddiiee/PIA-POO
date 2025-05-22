@@ -22,6 +22,11 @@ def selec_dificultad(dificultad):
         filas = 16
         minas = 40
     screen = pygame.display.set_mode((ancho,alto))
+    screen.fill(bg_color_juego)
+
+def ganar_perder_menu_ventana():
+    screen = pygame.display.set_mode((300,300))
+
 
 def tiempo():
     tiempo_surf = pygame.image.load(direccion + 'Jugando/tempo_azul.png')
@@ -30,11 +35,13 @@ def tiempo():
     screen.blit(tiempo_surf,tiempo_rect)
     current_time = int((pygame.time.get_ticks() - start_time) / 1000)
 
-
+#Colores 
 bg_color_menu = '#F18D96'
 bg_color_juego = '#6DADC6'
 text_color = '#56536E'
 detalles_blanco = '#E8DED4'
+perder = '#168AB6'
+ganar = '#E6AD37'
 
 pygame.init()
 start_time = 0
@@ -42,7 +49,7 @@ pygame.display.set_caption('Buscaminas')
 
 clock = pygame.time.Clock()
 game_activo = False
-estado_juego = 'menu'
+estado_juego = 'ganar'
 screen = pygame.display.set_mode((300,300))
 band_primero = True
 
@@ -55,7 +62,7 @@ while True:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print(event.pos)
                 print()#si es el primer click cambiar la bandera a False
-        if not game_activo:
+        if not game_activo and estado_juego == 'menu':
             if event.type == pygame.MOUSEBUTTONUP:
                 if facil_rect.collidepoint(event.pos):
                     estado_juego = 'jugando'
@@ -69,6 +76,14 @@ while True:
                     sep = 5
                     game_activo = True
                     selec_dificultad('media')
+        if not game_activo and estado_juego == 'perder':
+            if event.type == pygame.MOUSEBUTTONUP:
+                if remenu_rect.collidepoint(event.pos):
+                    estado_juego = 'menu'
+        if not game_activo and estado_juego == 'ganar':
+            if event.type == pygame.MOUSEBUTTONUP:
+                if ganmenu_rect.collidepoint(event.pos):
+                    estado_juego = 'menu'
     if estado_juego == 'menu':
         titulo_surf = pygame.image.load(direccion + 'Menu/Buscaminas.png').convert_alpha()
         facil_surf = pygame.image.load(direccion + 'Menu/Facil.png').convert_alpha()
@@ -82,18 +97,29 @@ while True:
         screen.blit(facil_surf, facil_rect)
         screen.blit(medio_surf,medio_rect)
         band_primero = True
+    if estado_juego == 'perder':
+        perder_surf = pygame.image.load(direccion+ 'Perder/perder_fondo.png').convert_alpha()
+        perder_rect = perder_surf.get_rect(center = (150,150))
+        remenu_surf = pygame.image.load(direccion + 'Perder/menu.png')
+        remenu_rect = remenu_surf.get_rect(center = (150, 250))
+        screen.blit(perder_surf, perder_rect)
+        screen.blit(remenu_surf, remenu_rect)
+    if estado_juego == 'ganar':
+        gantiempo_surf = pygame.image.load(direccion + 'Ganar/tiempo_ganar.png')
+        ganmenu_surf = pygame.image.load(direccion + 'Ganar/menu_ganar.png')
+        gantiempo_rect = gantiempo_surf.get_rect(midbottom = (75, 250))
+        ganmenu_rect = ganmenu_surf.get_rect(midbottom = (225, 250))
+        screen.blit(gantiempo_surf, gantiempo_rect)
+        screen.blit(ganmenu_surf, ganmenu_rect)
     if game_activo:
         if estado_juego == 'jugando':
-            screen.fill(bg_color_juego)
+
             tiempo()
             for i in range(columnas):
                 for j in range(filas):
                     pygame.draw.rect(screen, detalles_blanco,pygame.Rect(j*(celdas + sep)+10, i*(celdas+sep)+10, 30, 30))
             
-    if estado_juego == 'perder':
-        print()
-    if estado_juego == 'ganar':
-        print()
+    
 
     clock.tick(60)
     pygame.display.update()
