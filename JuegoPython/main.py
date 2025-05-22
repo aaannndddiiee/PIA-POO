@@ -1,33 +1,47 @@
 import pygame
 from sys import exit
 
-global estado_juego, columnas, filas, minas, direccion
-
 direccion = 'C:/Users/andre/OneDrive/Desktop/5to sem/POO/JUEGOPYTHON/'
 
 def selec_dificultad(dificultad):
+    global ancho
+    global alto
+    global columnas
+    global filas
+    global minas
     if dificultad == 'facil':
+        ancho = 295
+        alto = 350
         columnas = 8
         filas = 8
+        minas = 10
     if dificultad == 'media':
-        colunmas = 16
+        ancho = 575
+        alto = 620
+        columnas = 16
         filas = 16
+        minas = 40
+    screen = pygame.display.set_mode((ancho,alto))
 
 def tiempo():
+    tiempo_surf = pygame.image.load(direccion + 'Jugando/tempo_azul.png')
+    tiempo_surf = pygame.transform.rotozoom(tiempo_surf, 0, 1.2)
+    tiempo_rect = tiempo_surf.get_rect(midbottom =(100, abs(20-alto)) )
+    screen.blit(tiempo_surf,tiempo_rect)
     current_time = int((pygame.time.get_ticks() - start_time) / 1000)
 
 
 bg_color_menu = '#F18D96'
 bg_color_juego = '#6DADC6'
 text_color = '#56536E'
+detalles_blanco = '#E8DED4'
 
 pygame.init()
 start_time = 0
-
 pygame.display.set_caption('Buscaminas')
 
 clock = pygame.time.Clock()
-game_activo = True
+game_activo = False
 estado_juego = 'menu'
 screen = pygame.display.set_mode((300,300))
 band_primero = True
@@ -39,8 +53,22 @@ while True:
             exit()
         if game_activo:
             if event.type == pygame.MOUSEBUTTONDOWN:
+                print(event.pos)
                 print()#si es el primer click cambiar la bandera a False
-
+        if not game_activo:
+            if event.type == pygame.MOUSEBUTTONUP:
+                if facil_rect.collidepoint(event.pos):
+                    estado_juego = 'jugando'
+                    celdas = 30
+                    sep = 5
+                    game_activo = True
+                    selec_dificultad('facil')
+                if medio_rect.collidepoint(event.pos):
+                    estado_juego = 'jugando'
+                    celdas = 30
+                    sep = 5
+                    game_activo = True
+                    selec_dificultad('media')
     if estado_juego == 'menu':
         titulo_surf = pygame.image.load(direccion + 'Menu/Buscaminas.png').convert_alpha()
         facil_surf = pygame.image.load(direccion + 'Menu/Facil.png').convert_alpha()
@@ -54,8 +82,14 @@ while True:
         screen.blit(facil_surf, facil_rect)
         screen.blit(medio_surf,medio_rect)
         band_primero = True
-    if estado_juego == 'jugando':
-        print()
+    if game_activo:
+        if estado_juego == 'jugando':
+            screen.fill(bg_color_juego)
+            tiempo()
+            for i in range(columnas):
+                for j in range(filas):
+                    pygame.draw.rect(screen, detalles_blanco,pygame.Rect(j*(celdas + sep)+10, i*(celdas+sep)+10, 30, 30))
+            
     if estado_juego == 'perder':
         print()
     if estado_juego == 'ganar':
