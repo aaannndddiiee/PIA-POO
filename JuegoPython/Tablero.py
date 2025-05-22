@@ -27,6 +27,7 @@ class Tablero:
             posy = ran(0, self.nColumnas - 1)
             if(not (self.casillas[posx][posy].getPos() in pos_safe) and not self.casillas[posx][posy].isMina()):
                 self.casillas[posx][posy].setMina(True)
+                self.casillas[posx][posy].setMinasAlrededor(10)
                 nminas -= 1
     
     def casillasAdyacentes(self, fila, columna):

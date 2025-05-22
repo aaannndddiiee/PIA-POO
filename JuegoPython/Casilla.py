@@ -40,3 +40,6 @@ class Casilla:
     
     def setBandera(self, bandera):
         self.bandera = bandera
+    
+    def getBandera(self):
+        return self.bandera

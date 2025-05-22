@@ -4,6 +4,7 @@ from Tablero import Tablero as tab
 
 direccion = 'C:/Users/andre/OneDrive/Desktop/5to sem/POO/JUEGOPYTHON/'
 
+#donde tengo cuantas colunmas filas minas y el tamaño de la ventana
 def selec_dificultad(dificultad):
     global ancho
     global alto
@@ -26,6 +27,7 @@ def selec_dificultad(dificultad):
     screen.fill(bg_color_juego)
 
 def ventana_default():
+    #pantalla usada para el menu, ganar, perder
     screen = pygame.display.set_mode((300,300))
 
 def tiempo():
@@ -35,6 +37,38 @@ def tiempo():
     screen.blit(tiempo_surf,tiempo_rect)
     current_time = int((pygame.time.get_ticks() - start_time) / 1000)
 
+
+def revelar_casillas_ady(tab, x, y):
+    #fuera de los limites
+    if x < 0 or x >= filas or y < 0 or y >= columnas:
+        return
+    #para no revelar donde hay bandera o ya es visible
+    if tab.casillas[x][y].getBandera():
+        return
+    if tab.casillas[x][y].isVisible():
+        return
+    
+    #revelando la casilla
+    tab.casillas[x][y].setVisible(True)
+    minas_alrededor = tab.casillas[x][y].getMinasAlrededor()
+    num_surf = pygame.image.load(direccion + f'Jugando/{minas_alrededor}.png')
+    screen.blit(num_surf, (y * (celdas + sep) + 10, x * (celdas + sep) + 10))
+
+    #continua revelando casillas hasta que llegue a donde hay adyacentes con minas
+    #utilizando recursividad (waos)
+    if minas_alrededor == 0:
+        for i in [-1, 0, 1]:
+            for j in [-1, 0, 1]:
+                if i != 0 or j != 0:
+                    revelar_casillas_ady(tab, x + i, y + j)
+
+
+def explotar():
+    print()
+
+def flores():
+    print()
+
 #Colores 
 bg_color_menu = '#F18D96'
 bg_color_juego = '#6DADC6'
@@ -43,17 +77,26 @@ detalles_blanco = '#E8DED4'
 perder = '#168AB6'
 ganar = '#E6AD37'
 
+#Inciando la ventana y tiempo
 pygame.init()
-start_time = 0
 pygame.display.set_caption('Buscaminas')
-
-clock = pygame.time.Clock()
-estado_juego = 'menu'
 screen = pygame.display.set_mode((300,300))
+clock = pygame.time.Clock()
+start_time = 0
+
+#Variables para el juego
+estado_juego = 'menu'
 primer_click = True
 game_activo = False
 tablero_inciado = False
+banderas_correctas = []
+banderas = 0
+n_banderas = 0
+fila = 0
+col = 0
+perder = False
 
+#Tablero
 tablero = tab
 
 while True:
@@ -71,16 +114,33 @@ while True:
                 game_activo = False
                 ventana_default()
         if game_activo:
-            if event.type == pygame.MOUSEBUTTONUP:
-                if primer_click:
-                    x,y = pygame.mouse.get_pos() 
-                    x = (x - 10) // (celdas + sep)
-                    y = (y - 10) // (celdas + sep)
-                    print(x,y)
-                    tab.iniciarMinas(tab, minas, x, y)
-                    tab.numerosMinas(tab)
-                    tab.imprimir(tab)
-                    primer_click = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_presses = pygame.mouse.get_pressed()
+                x,y = pygame.mouse.get_pos() 
+                col = (x - 10) // (celdas + sep)
+                fila = (y - 10) // (celdas + sep)
+                if mouse_presses:
+                    if primer_click:
+                        tab.iniciarMinas(tab, minas, fila, col)
+                        tab.numerosMinas(tab)
+                        tab.imprimir(tab)
+                        primer_click = False
+                        revelar_casillas_ady(tab,fila,col)
+                    elif tab.casillas[fila][col].getMina():
+                        perder = True
+                    else:
+                        revelar_casillas_ady(tab,fila,col)
+                else: 
+                    if tab.casillas[fila][col].getBandera():
+                        tab.casillas[fila][col].setBandera(False)
+                        if tab.casillas[fila][col].getMina():
+                            banderas -= 1
+                            banderas_correctas.pop()
+                    else:
+                        tab.casillas[fila][col].setBandera(True)
+                        if tab.casillas[fila][col].getMina():
+                            banderas_correctas.append(1)
+                            banderas += 1
         if not game_activo and estado_juego == 'menu':
             if event.type == pygame.MOUSEBUTTONUP:
                 if facil_rect.collidepoint(event.pos):
@@ -121,7 +181,11 @@ while True:
         screen.blit(titulo_surf,titulo_rect)
         screen.blit(facil_surf, facil_rect)
         screen.blit(medio_surf,medio_rect)
-        band_primero = True
+        primer_click = True
+        banderas_correctas.clear()
+        banderas = 0
+        n_banderas = 0
+        perder = False
     if estado_juego == 'perder':
         perder_surf = pygame.image.load(direccion+ 'Perder/perder_fondo.png').convert_alpha()
         perder_rect = perder_surf.get_rect(center = (150,150))
@@ -150,9 +214,20 @@ while True:
             tab.iniciarTablero(tab)
             tab.imprimir(tab)
             tablero_inciado = True
-            for i in range(columnas):
-                for j in range(filas):
+            for i in range(filas):
+                for j in range(columnas):
                     pygame.draw.rect(screen, detalles_blanco,pygame.Rect(j*(celdas + sep)+10, i*(celdas+sep)+10, 30, 30))
+        else:
+            if tab.casillas[fila][col].getMina():
+                explotar()
+                estado_juego = 'perder'
+                game_activo = False
+            if tab.casillas[fila][col].getBandera():
+                print()
+            if banderas < n_banderas:
+                pygame.draw.rect(screen,detalles_blanco, pygame.Rect((col*(celdas + sep) + 10, fila*(celdas + sep) + 10), 30,30))
+            n_banderas = banderas
+
     clock.tick(60)
     pygame.display.update()
 
