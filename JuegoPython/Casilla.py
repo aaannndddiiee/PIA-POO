@@ -8,6 +8,8 @@ class Casilla:
         self.visible = False
         self.bandera = False
 
+    #Metodos para obtener si la casilla tiene mina, colocar mina, obtener, colocar posiciones; obtener, colocar numeros; 
+    #saber si es visible, hacerla visible; colocar bandera, obtener bandera
     def isMina(self):
         return self.mina
     

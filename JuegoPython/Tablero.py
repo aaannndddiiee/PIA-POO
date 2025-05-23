@@ -11,9 +11,11 @@ class Tablero:
     def setFilas(self, filas):
         self.nFilas = filas
 
+    #Incia la matriz
     def iniciarTablero(self):
         self.casillas = [[Casilla.Casilla(i, j, False, i * self.nColumnas + j + 1, 0) for j in range(self.nColumnas)] for i in range(self.nFilas)]
 
+    #Coloca las mina de manera aleatoria en el tablero, evitando, la primera casilla clickeada y sus adyacentes
     def iniciarMinas(self, nminas, x, y):
         self.casillas[x][y].setMinasAlrededor(0)
         pos_safe = []
@@ -30,6 +32,7 @@ class Tablero:
                 self.casillas[posx][posy].setMinasAlrededor(10)
                 nminas -= 1
     
+    #Coloca numeros en todas las casillas adyacentes a una mina
     def casillasAdyacentes(self, fila, columna):
         pos = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]]
         for i in range(8):
@@ -37,13 +40,15 @@ class Tablero:
                 if(columna + pos[i][1] >= 0 and columna + pos[i][1] < self.nFilas):
                     if(not (self.casillas[fila + pos[i][0]][columna + pos[i][1]].getMina())):
                         self.casillas[fila + pos[i][0]][columna + pos[i][1]].setMinasAlrededor(1)
-
+    
+    #Recorre las casillas hasta que una tenga mina
     def numerosMinas(self):
         for i in range(self.nFilas):
             for j in range(self.nColumnas):
                 if(self.casillas[i][j].isMina()):
                     self.casillasAdyacentes(self,i,j)
     
+    #Imprime el tablero, con numeros y x en donde hay minas
     def imprimir(self):
         print("\nTABLERO:")
         for fila in self.casillas:
