@@ -37,7 +37,6 @@ def tiempo():
     screen.blit(tiempo_surf,tiempo_rect)
     current_time = int((pygame.time.get_ticks() - start_time) / 1000)
 
-
 def revelar_casillas_ady(tab, x, y):
     #fuera de los limites
     if x < 0 or x >= filas or y < 0 or y >= columnas:
@@ -62,10 +61,10 @@ def revelar_casillas_ady(tab, x, y):
                 if i != 0 or j != 0:
                     revelar_casillas_ady(tab, x + i, y + j)
 
-
+#funcion para imprimir todas las minas (bomb)
 def explotar():
     print()
-
+#funcion para ganar (en donde hay minas imprimir flores)
 def flores():
     print()
 
@@ -84,7 +83,7 @@ screen = pygame.display.set_mode((300,300))
 clock = pygame.time.Clock()
 start_time = 0
 
-#Variables para el juego
+#Variables para el juego, banderas y contadores
 estado_juego = 'menu'
 primer_click = True
 game_activo = False
@@ -104,6 +103,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+            #atajos
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_g:
                 estado_juego = 'ganar'
@@ -115,22 +115,28 @@ while True:
                 ventana_default()
         if game_activo:
             if event.type == pygame.MOUSEBUTTONDOWN:
+                #click izquierdo o derecho
                 mouse_presses = pygame.mouse.get_pressed()
                 x,y = pygame.mouse.get_pos() 
                 col = (x - 10) // (celdas + sep)
                 fila = (y - 10) // (celdas + sep)
-                if mouse_presses:
+                if mouse_presses[0]:
                     if primer_click:
+                        #las minas se generan despues del primer click
                         tab.iniciarMinas(tab, minas, fila, col)
                         tab.numerosMinas(tab)
                         tab.imprimir(tab)
                         primer_click = False
                         revelar_casillas_ady(tab,fila,col)
+                        #Click en una mina
                     elif tab.casillas[fila][col].getMina():
                         perder = True
+                        ventana_default()
                     else:
+                        #click en casilla cualquiera
                         revelar_casillas_ady(tab,fila,col)
-                else: 
+                if mouse_presses[2]:
+                    #click derecho = quitar / colocar bandera 
                     if tab.casillas[fila][col].getBandera():
                         tab.casillas[fila][col].setBandera(False)
                         if tab.casillas[fila][col].getMina():
@@ -199,12 +205,19 @@ while True:
         screen.blit(calavera_surf, calavera_rect)
         screen.blit(remenu_surf, remenu_rect)
     if estado_juego == 'ganar':
+        ganar_surf = pygame.image.load(direccion + 'Ganar/ganar_titulo.png')
         gantiempo_surf = pygame.image.load(direccion + 'Ganar/tiempo_ganar.png')
         ganmenu_surf = pygame.image.load(direccion + 'Ganar/menu_ganar.png')
+        carita_surf = pygame.image.load(direccion + 'Ganar/cara_feliz.png')
+        carita_surf = pygame.transform.rotozoom(carita_surf, 0, 2.1)
+        ganar_rect = ganar_surf.get_rect(center = (150,150))
         gantiempo_rect = gantiempo_surf.get_rect(midbottom = (75, 250))
         ganmenu_rect = ganmenu_surf.get_rect(midbottom = (225, 250))
+        carita_rect = carita_surf.get_rect(center = (150,150))
+        screen.blit(ganar_surf, ganar_rect)
         screen.blit(gantiempo_surf, gantiempo_rect)
         screen.blit(ganmenu_surf, ganmenu_rect)
+        screen.blit(carita_surf, carita_rect)
     if game_activo:
         if estado_juego == 'jugando':
             tiempo()
@@ -218,22 +231,16 @@ while True:
                 for j in range(columnas):
                     pygame.draw.rect(screen, detalles_blanco,pygame.Rect(j*(celdas + sep)+10, i*(celdas+sep)+10, 30, 30))
         else:
-            if tab.casillas[fila][col].getMina():
+            if perder:
                 explotar()
                 estado_juego = 'perder'
                 game_activo = False
             if tab.casillas[fila][col].getBandera():
-                print()
+                bandera_surf = pygame.image.load(direccion + 'Jugando/bandera.png')
+                screen.blit(bandera_surf, (col * (celdas + sep) + 10, fila * (celdas + sep) + 10))
             if banderas < n_banderas:
                 pygame.draw.rect(screen,detalles_blanco, pygame.Rect((col*(celdas + sep) + 10, fila*(celdas + sep) + 10), 30,30))
             n_banderas = banderas
 
     clock.tick(60)
     pygame.display.update()
-
-
-"""tablero = Tablero.Tablero(8, 8)
-tablero.iniciarTablero()
-tablero.iniciarMinas(10, 0, 0)
-tablero.numerosMinas()
-tablero.imprimir()"""
