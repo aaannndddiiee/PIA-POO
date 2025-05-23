@@ -152,14 +152,19 @@ while True:
                     #click derecho = quitar / colocar bandera 
                     if tab.casillas[fila][col].getBandera():
                         tab.casillas[fila][col].setBandera(False)
+                        banderas -= 1
                         if tab.casillas[fila][col].getMina():
-                            banderas -= 1
                             banderas_correctas.pop()
                     else:
                         tab.casillas[fila][col].setBandera(True)
+                        banderas += 1
                         if tab.casillas[fila][col].getMina():
                             banderas_correctas.append(1)
-                            banderas += 1
+            if len(banderas_correctas) == minas and len(banderas_correctas) > 1:
+                game_activo = False
+                estado_juego = 'ganar'
+                flores()
+                ventana_default()
         if not game_activo and estado_juego == 'menu':
             if event.type == pygame.MOUSEBUTTONUP:
                 if facil_rect.collidepoint(event.pos):
@@ -253,7 +258,7 @@ while True:
                 bandera_surf = pygame.image.load(direccion + 'Jugando/bandera.png')
                 screen.blit(bandera_surf, (col * (celdas + sep) + 10, fila * (celdas + sep) + 10))
             if banderas < n_banderas:
-                pygame.draw.rect(screen,detalles_blanco, pygame.Rect((col*(celdas + sep) + 10, fila*(celdas + sep) + 10), 30,30))
+                pygame.draw.rect(screen,detalles_blanco, pygame.Rect(col*(celdas + sep) + 10, fila*(celdas + sep) + 10, 30,30))
             n_banderas = banderas
 
     clock.tick(60)
