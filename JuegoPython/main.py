@@ -160,12 +160,12 @@ while True:
                         estado_juego = 'perder'
                         game_activo = False
                         explotar()
-                        time.sleep(5)
+                        time.sleep(3)
                         ventana_default()
                     else:
                         #click en casilla cualquiera
                         revelar_casillas_ady(tab,fila,col)
-                if mouse_presses[2]:
+                if mouse_presses[2] and not tab.casillas[fila][col].isVisible():
                     #click derecho = quitar / colocar bandera 
                     if tab.casillas[fila][col].getBandera():
                         tab.casillas[fila][col].setBandera(False)
@@ -186,7 +186,7 @@ while True:
                 estado_juego = 'ganar'
                 flores()
                 tiempo_ganar = tiempo()
-                time.sleep(5)
+                time.sleep(3)
                 ventana_default()
         if not game_activo and estado_juego == 'menu':
             if event.type == pygame.MOUSEBUTTONUP:
@@ -224,12 +224,16 @@ while True:
         facil_surf = pygame.transform.rotozoom(facil_surf,0,1.5)
         medio_surf = pygame.image.load(direccion + 'Menu/Medio.png').convert_alpha()
         medio_surf = pygame.transform.rotozoom(medio_surf, 0, 1.5)
+        flor_menu_surf = pygame.image.load(direccion + 'Menu/flor_inicio.png').convert_alpha()
+        flor_menu_surf = pygame.transform.rotozoom(flor_menu_surf, 0, 1.5)
         titulo_rect = titulo_surf.get_rect(center = (150,150))
         facil_rect = facil_surf.get_rect(midbottom = (75, 250))
         medio_rect = medio_surf.get_rect(midbottom = (225,250))
+        flor_menu_rect = flor_menu_surf.get_rect(center = (150,150))
         screen.blit(titulo_surf,titulo_rect)
         screen.blit(facil_surf, facil_rect)
         screen.blit(medio_surf,medio_rect)
+        screen.blit(flor_menu_surf, flor_menu_rect)
         #Regresar contadores y banderas
         primer_click = True
         banderas_correctas.clear()
