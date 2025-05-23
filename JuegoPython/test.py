@@ -1,8 +1,9 @@
 import unittest
 from Tablero import Tablero as tab
 from random import randint
+import main
 
-class Tablerotest(unittest.TestCase):
+class JuegoTest (unittest.TestCase):
 
     def setUp(self):
         tab.setColumnas(tab, 8)
@@ -20,4 +21,8 @@ class Tablerotest(unittest.TestCase):
         tab.iniciarMinas(tab,10,fila, columna)
         self.assertEqual(tab.casillas[fila][columna].isMina(), False, 'No deberia tener mina')
 
+    def testNMinas(self):
+        main.selec_dificultad('facil')
+        self.assertEqual(main.minas, 10, 'El numero de minas es incorrecto')
+    
 unittest.main()
