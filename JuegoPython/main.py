@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
 from Tablero import Tablero as tab
+import time
 
 direccion = 'C:/Users/andre/OneDrive/Desktop/5to sem/POO/JUEGOPYTHON/'
 
@@ -63,10 +64,23 @@ def revelar_casillas_ady(tab, x, y):
 
 #funcion para imprimir todas las minas (bomb)
 def explotar():
-    print()
+    mina_surf = pygame.image.load(direccion + 'Perder/mina.png')
+    for i in range(filas):
+        for j in range(columnas):
+            if tab.casillas[i][j].getMina():
+                mina_rect = mina_surf.get_rect(topleft = (j*(celdas + sep)+10, i*(celdas+sep)+10))
+                screen.blit(mina_surf, mina_rect)
+    pygame.display.update()
+
 #funcion para ganar (en donde hay minas imprimir flores)
 def flores():
-    print()
+    flor_surf = pygame.image.load(direccion + 'Ganar/flor_ganar.png')
+    for i in range(filas):
+        for j in range(columnas):
+            if tab.casillas[i][j].getMina():
+                flor_rect = flor_surf.get_rect(topleft = (j*(celdas + sep)+10, i*(celdas+sep)+10))
+                screen.blit(flor_surf, flor_rect)
+    pygame.display.update()
 
 #Colores 
 bg_color_menu = '#F18D96'
@@ -131,7 +145,6 @@ while True:
                         #Click en una mina
                     elif tab.casillas[fila][col].getMina():
                         perder = True
-                        ventana_default()
                     else:
                         #click en casilla cualquiera
                         revelar_casillas_ady(tab,fila,col)
@@ -235,6 +248,7 @@ while True:
                 explotar()
                 estado_juego = 'perder'
                 game_activo = False
+                ventana_default()
             if tab.casillas[fila][col].getBandera():
                 bandera_surf = pygame.image.load(direccion + 'Jugando/bandera.png')
                 screen.blit(bandera_surf, (col * (celdas + sep) + 10, fila * (celdas + sep) + 10))
