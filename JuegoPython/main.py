@@ -137,8 +137,6 @@ n_banderas = 0
 fila = 0
 col = 0
 
-#Tablero
-tablero = tab
 
 while True:
     for event in pygame.event.get():
